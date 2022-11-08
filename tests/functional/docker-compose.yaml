@@ -1,0 +1,28 @@
+version: '3'
+services:
+  backend:
+    build: ../../.
+    env_file:
+      - .env
+    restart: always
+    depends_on:
+      - elastic
+      - redis
+
+  elastic:
+    image: elasticsearch:7.17.6
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
+    restart: always
+
+  redis:
+    image: redis:alpine
+    restart: always
+
+  tests:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - backend
