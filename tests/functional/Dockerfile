@@ -11,4 +11,4 @@ RUN  pip install --upgrade pip \
 
 COPY . .
 
-CMD ["pytest", "src"]
+ENV PYTHONPATH "${PYTHONPATH}:/tests/functional"

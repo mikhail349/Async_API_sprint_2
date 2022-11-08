@@ -8,6 +8,8 @@ services:
     depends_on:
       - elastic
       - redis
+    ports:
+      - "8000:8000"
 
   elastic:
     image: elasticsearch:7.17.6
@@ -15,10 +17,14 @@ services:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
     restart: always
+    ports:
+      - "9200:9200"
 
   redis:
     image: redis:alpine
     restart: always
+    ports:
+      - "6379:6379"
 
   tests:
     build: .
@@ -26,3 +32,7 @@ services:
       - .env
     depends_on:
       - backend
+    entrypoint: >
+      sh -c "python3 utils/wait_for_es.py
+      && python3 utils/wait_for_redis.py
+      && pytest src"
