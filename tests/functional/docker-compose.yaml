@@ -34,5 +34,6 @@ services:
       - backend
     entrypoint: >
       sh -c "python3 utils/wait_for_es.py
+      && python3 utils/es_setup.py
       && python3 utils/wait_for_redis.py
       && pytest src"
