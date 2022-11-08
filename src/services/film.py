@@ -1,38 +1,22 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any
 
 from aioredis import Redis
-from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 from pydantic import BaseModel
 
 from src.api.v1.query_params.films import Filter
 from src.db.elastic import get_elastic
 from src.db.redis import get_redis
+from src.providers.elastic import Elastic
+from src.providers.base import DataProvider
 from src.models.film import Film
 from src.services.base import BaseService
 
 
-@dataclass
-class FilmService(BaseService):
-    """Сервис фильма.
-
-    Args:
-        redis: соединение с Redis
-        elastic: соединение с Elasticsearch
-        model: класс модели фильма
-        es_index: название es-индекса
-        es_search_fields: список полей, по которым будет осуществляться
-                          полнотекстовый поиск
-
-    """
-    model: BaseModel = Film
-    es_index: str = 'movies'
-    es_search_fields: list[str] = field(
-        default_factory=lambda: ['title', 'description']
-    )
-
+class FilmElastic(Elastic):
+    """Класс для получения кинопроизведений из ElasticSearch."""
     def compose_filters(self, filter: Filter) -> list[dict]:
         def _get_nested(field_name: str, value: Any) -> dict:
             return {
@@ -70,19 +54,30 @@ class FilmService(BaseService):
         return filters
 
 
+@dataclass
+class FilmService(BaseService):
+    """Сервис фильма."""
+    model: BaseModel = Film
+    cache_key_prefix: str = 'movies'
+
+
+async def get_data_provider() -> FilmElastic:
+    es = await get_elastic()
+    return FilmElastic(es=es, index='movies')
+
 @lru_cache
 def get_film_service(
         redis: Redis = Depends(get_redis),
-        elastic: AsyncElasticsearch = Depends(get_elastic)
+        data_provider: DataProvider = Depends(get_data_provider)
 ) -> FilmService:
     """Получить инстанс сервиса фильма.
 
     Args:
         redis: соединение с Redis
-        elastic: соединение с Elasticsearch
+        data_provider: класс для предоставления данных
 
     Returns:
        FilmService: сервис фильма.
 
     """
-    return FilmService(redis=redis, elastic=elastic)
+    return FilmService(redis=redis, data_provider=data_provider)

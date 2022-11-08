@@ -19,24 +19,23 @@ class RedisCacheMixin:
     redis: Redis
     model: BaseModel = BaseModel
 
-    async def get_obj_from_cache(self, obj_id: str) -> Optional[model]:
+    async def get_obj_from_cache(self, key: str) -> Optional[model]:
         """Получить объект по ID из кэша.
 
         Args:
-            obj_id: ID объекта
+            key: ID объекта
 
         Returns:
             Optional[model]: объект
 
         """
-        data = await self.redis.get(obj_id)
+        data = await self.redis.get(key)
         if not data:
             return None
 
-        obj = self.model.parse_raw(data)
-        return obj
+        return data
 
-    async def put_obj_to_cache(self, obj: model):
+    async def put_obj_to_cache(self, key, value):
         """Записать объект в кэш.
 
         Args:
@@ -44,7 +43,7 @@ class RedisCacheMixin:
 
         """
         await self.redis.set(
-            obj.id, obj.json(),
+            key, value,
             expire=config.redis_settings.CACHE_EXPIRE_IN_SECONDS)
 
     async def get_objects_from_cache(self, key: str) -> list[model]:
