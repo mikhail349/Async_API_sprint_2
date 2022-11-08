@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional, Any
 
 from pydantic import BaseModel
@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from src.api.v1.query_params.base import Page
 from src.services.mixins import RedisCacheMixin
 from src.providers.base import DataProvider
+
 
 @dataclass
 class BaseService(RedisCacheMixin):
@@ -79,8 +80,9 @@ class BaseService(RedisCacheMixin):
         if not obj:
             return None
         return self.model(**obj)
-    
-    def _transform_objects_from_cache(self, objects: Optional[Any]) -> list[model]:
+
+    def _transform_objects_from_cache(self,
+                                      objects: Optional[Any]) -> list[model]:
         """Трансформировать объекты из кэша.
 
         Args:
@@ -122,7 +124,7 @@ class BaseService(RedisCacheMixin):
         """
         json_dumps = self.model.Config.json_dumps
         return json_dumps([obj.dict() for obj in objects], default=str)
-    
+
     def _transform_obj_to_cache(self, obj: model) -> str:
         """Трансформировать объект в кэш.
 
@@ -141,7 +143,7 @@ class BaseService(RedisCacheMixin):
         page: Page,
         query: str = None,
         sort: list[str] = None,
-        filter: BaseModel = None       
+        filter: BaseModel = None
     ) -> list[model]:
         """Получить список объектов с учетом поиска и фильтрации.
 
@@ -162,7 +164,8 @@ class BaseService(RedisCacheMixin):
                                           sort=sort,
                                           filter=filter)
 
-        objects = await self.get_obj_from_cache(key) # TODO: objects = await self.cache_provider.get(key)
+        objects = await self.get_obj_from_cache(key)
+        # TODO: objects = await self.cache_provider.get(key)
         objects = self._transform_objects_from_cache(objects)
 
         if not objects:
@@ -177,8 +180,9 @@ class BaseService(RedisCacheMixin):
                 return []
 
             cache = self._transform_objects_to_cache(objects)
-            await self.put_obj_to_cache(key, cache) # TODO: await self.cache_provider.put(key, cache)
-            
+            await self.put_obj_to_cache(key, cache)
+            # TODO: await self.cache_provider.put(key, cache)
+
         return objects
 
     async def search(self,
@@ -227,7 +231,8 @@ class BaseService(RedisCacheMixin):
             Optional[model]: объект
 
         """
-        obj = await self.get_obj_from_cache(obj_id) # TODO: obj = await self.cache_provider.get(obj_id)
+        obj = await self.get_obj_from_cache(obj_id)
+        # TODO: obj = await self.cache_provider.get(obj_id)
         obj = self._transform_obj_from_cache(obj)
 
         if not obj:
@@ -235,8 +240,9 @@ class BaseService(RedisCacheMixin):
             obj = self._transform_obj_from_data(obj)
             if not obj:
                 return None
-            
+
             cache = self._transform_obj_to_cache(obj)
-            await self.put_obj_to_cache(obj.id, cache) # TODO: await self.cache_provider.put(obj.id, cache)
+            await self.put_obj_to_cache(obj.id, cache)
+            # TODO: await self.cache_provider.put(obj.id, cache)
 
         return obj

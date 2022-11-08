@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends, Query, Path, HTTPException
 
 from src.api.v1.query_params.base import Page, get_page
 from src.api.v1.models.genre import Genre
-from src.services.genre import GenreService, get_genre_service
+from src.services.base import BaseService
+from src.services.genre import get_genre_service
 from src.core.messages import messages
 
 router = APIRouter()
@@ -17,7 +18,7 @@ router = APIRouter()
 async def search(
         query: str = Query(..., description='Поисковый запрос'),
         page: Page = Depends(get_page),
-        genre_service: GenreService = Depends(get_genre_service)
+        genre_service: BaseService = Depends(get_genre_service)
 ) -> list[Genre]:
     return await genre_service.search(query=query, page=page)
 
@@ -28,7 +29,7 @@ async def search(
             description='Список жанров с пагинацией')
 async def genres(
     page: Page = Depends(get_page),
-    genre_service: GenreService = Depends(get_genre_service),
+    genre_service: BaseService = Depends(get_genre_service),
 ) -> list[Genre]:
     return await genre_service.get(page=page)
 
@@ -39,7 +40,7 @@ async def genres(
             description='Детальная информация о жанре')
 async def genre_details(
     genre_id: str = Path(..., description='ID жанра'),
-    genre_service: GenreService = Depends(get_genre_service)
+    genre_service: BaseService = Depends(get_genre_service)
 ) -> Genre:
     genre = await genre_service.get_by_id(genre_id)
     if not genre:

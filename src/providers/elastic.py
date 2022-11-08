@@ -1,6 +1,4 @@
 from typing import Optional, Any
-from abc import abstractmethod
-from dataclasses import dataclass
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from pydantic import BaseModel

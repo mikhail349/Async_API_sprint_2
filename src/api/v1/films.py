@@ -5,7 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from src.api.v1.query_params.base import Page, get_page
 from src.api.v1.query_params.films import Filter, get_filter
 from src.api.v1.models.film import FilmList, FilmDetails
-from src.services.film import FilmService, get_film_service
+from src.services.base import BaseService
+from src.services.film import get_film_service
 from src.core.messages import messages
 
 router = APIRouter()
@@ -20,7 +21,7 @@ async def search(
     query: str = Query(..., description='Поисковый запрос'),
     page: Page = Depends(get_page),
     sort: list[str] = Query(default=[], description='Поле для сортировки'),
-    film_service: FilmService = Depends(get_film_service)
+    film_service: BaseService = Depends(get_film_service)
 ) -> list[FilmList]:
     films = await film_service.search(query=query, page=page, sort=sort)
     return [FilmList(**film.dict()) for film in films]
@@ -32,7 +33,7 @@ async def search(
             description='Детальная информация о кинопроизведении')
 async def film_details(
     film_id: str = Path(..., description='ID кинопроизведения'),
-    film_service: FilmService = Depends(get_film_service)
+    film_service: BaseService = Depends(get_film_service)
 ) -> FilmDetails:
     film = await film_service.get_by_id(film_id)
     if not film:
@@ -51,7 +52,7 @@ async def films(
     filter: Filter = Depends(get_filter),
     page: Page = Depends(get_page),
     sort: list[str] = Query(default=[], description='Поле для сортировки'),
-    film_service: FilmService = Depends(get_film_service)
+    film_service: BaseService = Depends(get_film_service)
 ) -> list[FilmList]:
     films = await film_service.get(filter=filter, page=page, sort=sort)
     return [FilmList(**film.dict()) for film in films]

@@ -1,10 +1,8 @@
-from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any
 
 from aioredis import Redis
 from fastapi import Depends
-from pydantic import BaseModel
 
 from src.api.v1.query_params.films import Filter
 from src.db.elastic import get_elastic
@@ -54,22 +52,16 @@ class FilmElastic(Elastic):
         return filters
 
 
-@dataclass
-class FilmService(BaseService):
-    """Сервис фильма."""
-    model: BaseModel = Film
-    cache_key_prefix: str = 'movies'
-
-
 async def get_data_provider() -> FilmElastic:
     es = await get_elastic()
     return FilmElastic(es=es, index='movies')
+
 
 @lru_cache
 def get_film_service(
         redis: Redis = Depends(get_redis),
         data_provider: DataProvider = Depends(get_data_provider)
-) -> FilmService:
+) -> BaseService:
     """Получить инстанс сервиса фильма.
 
     Args:
@@ -80,4 +72,5 @@ def get_film_service(
        FilmService: сервис фильма.
 
     """
-    return FilmService(redis=redis, data_provider=data_provider)
+    return BaseService(redis=redis, data_provider=data_provider,
+                       model=Film, cache_key_prefix='movies')
