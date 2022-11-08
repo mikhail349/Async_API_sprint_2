@@ -11,4 +11,4 @@ RUN  pip install --upgrade pip \
 
 COPY . .
 
-ENV PYTHONPATH "${PYTHONPATH}:/tests/functional"
+ENV PYTHONPATH "${PYTHONPATH}:/"
