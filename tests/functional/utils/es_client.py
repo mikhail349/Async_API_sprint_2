@@ -1,5 +1,5 @@
 from elasticsearch import AsyncElasticsearch
-from settings import test_settings
+from tests.functional.settings import test_settings
 
 es = AsyncElasticsearch(
     hosts=[f'{test_settings.ELASTIC_HOST}:'

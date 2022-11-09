@@ -3,7 +3,7 @@ import logging
 
 import aioredis
 import backoff
-import settings
+from tests.functional import settings
 
 
 @backoff.on_exception(wait_gen=backoff.expo, exception=ConnectionError)

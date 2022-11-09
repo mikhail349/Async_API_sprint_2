@@ -2,7 +2,7 @@ import asyncio
 import json
 import os
 
-from es_client import get_elastic
+from tests.functional.utils.es_client import get_elastic
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
