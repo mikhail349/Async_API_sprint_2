@@ -10,10 +10,6 @@ from src.api.v1.query_params.base import Page
 es: Optional[AsyncElasticsearch] = None
 
 
-async def get_elastic() -> AsyncElasticsearch:
-    return es
-
-
 class ElasticStorage(DataStorage):
     """Класс для получения данных из ElasticSearch.
 

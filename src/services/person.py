@@ -1,11 +1,10 @@
 from functools import lru_cache
 from dataclasses import dataclass
 
-from aioredis import Redis
 from fastapi import Depends
 from pydantic import BaseModel
 
-from src.db.redis import get_redis
+from src.db.redis import get_redis_storage, RedisStorage
 from src.models import person
 from src.services.base import BaseService
 from src.storages.base import DataStorage
@@ -21,7 +20,8 @@ class PersonService(BaseService):
 
 @lru_cache()
 def get_person_service(
-        redis: Redis = Depends(get_redis),
+        redis_storage: RedisStorage = Depends(get_redis_storage),
         data_storage: DataStorage = Depends(get_data_storage),
 ) -> PersonService:
-    return PersonService(redis=redis, data_storage=data_storage)
+    return PersonService(redis_storage=redis_storage,
+                         data_storage=data_storage)

@@ -3,7 +3,7 @@ from typing import Any
 from elasticsearch import AsyncElasticsearch
 
 from src.api.v1.query_params.films import Filter
-from src.db.elastic import ElasticStorage, get_elastic
+from src.db.elastic import ElasticStorage, es
 
 
 class FilmElasticStorage(ElasticStorage):
@@ -50,5 +50,4 @@ class FilmElasticStorage(ElasticStorage):
 
 
 async def get_data_storage() -> FilmElasticStorage:
-    es = await get_elastic()
     return FilmElasticStorage(es=es)

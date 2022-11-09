@@ -1,8 +1,45 @@
-from typing import Optional
+from typing import Optional, Any
+
 from aioredis import Redis
+
+from src.core import config
 
 redis: Optional[Redis] = None
 
 
-async def get_redis() -> Redis:
-    return redis
+class RedisStorage:
+    """Класс для работы с кэшом Redis.
+
+    Args:
+        redis: соединение с Redis
+
+    """
+    def __init__(self, redis: Redis) -> None:
+        self.redis = redis
+
+    async def get(self, key: str) -> Optional[Any]:
+        """Получить данные по ключу из кэша.
+
+        Args:
+            key: ключ
+
+        Returns:
+            Optional[Any]: данные
+
+        """
+        return await self.redis.get(key)
+
+    async def put(self, key: str, value: Any):
+        """Записать данные в кэш.
+
+        Args:
+            value: данные
+
+        """
+        await self.redis.set(
+            key, value,
+            expire=config.redis_settings.CACHE_EXPIRE_IN_SECONDS)
+
+
+async def get_redis_storage() -> RedisStorage:
+    return RedisStorage(redis=redis)
