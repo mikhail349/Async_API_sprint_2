@@ -5,17 +5,11 @@ from aioredis import Redis
 from fastapi import Depends
 from pydantic import BaseModel
 
-from src.db.elastic import get_elastic
 from src.db.redis import get_redis
 from src.models import genre
 from src.services.base import BaseService
 from src.storages.base import DataStorage
-from src.storages.elastic import ElasticStorage
-
-
-async def get_data_storage() -> ElasticStorage:
-    es = await get_elastic()
-    return ElasticStorage(es=es, index='genres')
+from src.storages.genres import get_data_storage
 
 
 @dataclass
