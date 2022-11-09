@@ -1,11 +1,11 @@
-from elasticsearch import AsyncElasticsearch
+from elasticsearch import Elasticsearch
 from tests.functional.settings import test_settings
 
-es = AsyncElasticsearch(
+es = Elasticsearch(
     hosts=[f'{test_settings.ELASTIC_HOST}:'
            f'{test_settings.ELASTIC_PORT}']
 )
 
 
-async def get_elastic() -> AsyncElasticsearch:
+def get_elastic() -> Elasticsearch:
     return es
