@@ -1,6 +1,6 @@
 from elasticsearch import AsyncElasticsearch
 
-from src.db.elastic import ElasticStorage, es
+from src.db.elastic import ElasticStorage, get_elastic
 
 
 class GenreElasticStorage(ElasticStorage):
@@ -10,4 +10,5 @@ class GenreElasticStorage(ElasticStorage):
 
 
 async def get_data_storage() -> GenreElasticStorage:
+    es = await get_elastic()
     return GenreElasticStorage(es=es)
