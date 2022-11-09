@@ -10,7 +10,7 @@ from src.api.v1 import films, genres, persons
 from src.core import config
 from src.core.logger import LOGGING
 from src.db import redis
-from src.storages import elastic
+from src.db import elastic
 
 app = FastAPI(
     title=config.project_settings.PROJECT_NAME,

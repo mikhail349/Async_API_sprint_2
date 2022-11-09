@@ -1,7 +1,7 @@
 from elasticsearch import AsyncElasticsearch
 
 from src.api.v1.query_params.persons import Filter
-from src.storages.elastic import ElasticStorage, get_elastic
+from src.db.elastic import ElasticStorage, get_elastic
 
 
 class PersonElasticStorage(ElasticStorage):
