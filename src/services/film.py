@@ -1,19 +1,21 @@
 from functools import lru_cache
+from dataclasses import dataclass
 from typing import Any
 
 from aioredis import Redis
 from fastapi import Depends
+from pydantic import BaseModel
 
 from src.api.v1.query_params.films import Filter
 from src.db.elastic import get_elastic
 from src.db.redis import get_redis
-from src.providers.elastic import Elastic
-from src.providers.base import DataProvider
+from src.storages.elastic import ElasticStorage
+from src.storages.base import DataStorage
 from src.models.film import Film
 from src.services.base import BaseService
 
 
-class FilmElastic(Elastic):
+class FilmElasticStorage(ElasticStorage):
     """Класс для получения кинопроизведений из ElasticSearch."""
     def compose_filters(self, filter: Filter) -> list[dict]:
         def _get_nested(field_name: str, value: Any) -> dict:
@@ -52,16 +54,23 @@ class FilmElastic(Elastic):
         return filters
 
 
-async def get_data_provider() -> FilmElastic:
+async def get_data_storage() -> FilmElasticStorage:
     es = await get_elastic()
-    return FilmElastic(es=es, index='movies')
+    return FilmElasticStorage(es=es, index='movies')
+
+
+@dataclass
+class FilmService(BaseService):
+    """Сервис фильма."""
+    model: BaseModel = Film
+    cache_key_prefix: str = 'movies'
 
 
 @lru_cache
 def get_film_service(
         redis: Redis = Depends(get_redis),
-        data_provider: DataProvider = Depends(get_data_provider)
-) -> BaseService:
+        data_storage: DataStorage = Depends(get_data_storage)
+) -> FilmService:
     """Получить инстанс сервиса фильма.
 
     Args:
@@ -72,5 +81,4 @@ def get_film_service(
        FilmService: сервис фильма.
 
     """
-    return BaseService(redis=redis, data_provider=data_provider,
-                       model=Film, cache_key_prefix='movies')
+    return FilmService(redis=redis, data_storage=data_storage)

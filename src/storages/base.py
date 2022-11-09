@@ -6,8 +6,8 @@ from pydantic import BaseModel
 from src.api.v1.query_params.base import Page
 
 
-class DataProvider(ABC):
-    """Абстрактный класс для получения данных."""
+class DataStorage(ABC):
+    """Абстрактный класс хранилища данных."""
 
     @abstractmethod
     async def get_obj(self, id: str) -> Optional[Any]:

@@ -3,11 +3,11 @@ from typing import Optional, Any
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from pydantic import BaseModel
 
-from src.providers.base import DataProvider
+from src.storages.base import DataStorage
 from src.api.v1.query_params.base import Page
 
 
-class Elastic(DataProvider):
+class ElasticStorage(DataStorage):
     """Класс для получения данных из ElasticSearch.
 
     Args:

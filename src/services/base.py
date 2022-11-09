@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from src.api.v1.query_params.base import Page
 from src.services.mixins import RedisCacheMixin
-from src.providers.base import DataProvider
+from src.storages.base import DataStorage
 
 
 @dataclass
@@ -14,12 +14,13 @@ class BaseService(RedisCacheMixin):
 
     Args:
         model: класс модели
-        data_provider: поставщик данных
+        data_storage: класс получения данных
         cache_key_prefix: префикс для ключа кэша
 
     """
     model: BaseModel = None
-    data_provider: DataProvider = None
+    data_storage: DataStorage = None
+    # TODO: cache_storage: CacheStorage = None
     cache_key_prefix: str = None
 
     def _get_objects_cache_key(
@@ -165,11 +166,11 @@ class BaseService(RedisCacheMixin):
                                           filter=filter)
 
         objects = await self.get_obj_from_cache(key)
-        # TODO: objects = await self.cache_provider.get(key)
+        # TODO: objects = await self.cache_storage.get(key)
         objects = self._transform_objects_from_cache(objects)
 
         if not objects:
-            objects = await self.data_provider.get_objects(
+            objects = await self.data_storage.get_objects(
                 query=query,
                 page=page,
                 sort=sort,
@@ -181,7 +182,7 @@ class BaseService(RedisCacheMixin):
 
             cache = self._transform_objects_to_cache(objects)
             await self.put_obj_to_cache(key, cache)
-            # TODO: await self.cache_provider.put(key, cache)
+            # TODO: await self.cache_storage.put(key, cache)
 
         return objects
 
@@ -232,17 +233,17 @@ class BaseService(RedisCacheMixin):
 
         """
         obj = await self.get_obj_from_cache(obj_id)
-        # TODO: obj = await self.cache_provider.get(obj_id)
+        # TODO: obj = await self.cache_storage.get(obj_id)
         obj = self._transform_obj_from_cache(obj)
 
         if not obj:
-            obj = await self.data_provider.get_obj(obj_id)
+            obj = await self.data_storage.get_obj(obj_id)
             obj = self._transform_obj_from_data(obj)
             if not obj:
                 return None
 
             cache = self._transform_obj_to_cache(obj)
             await self.put_obj_to_cache(obj.id, cache)
-            # TODO: await self.cache_provider.put(obj.id, cache)
+            # TODO: await self.cache_storage.put(obj.id, cache)
 
         return obj

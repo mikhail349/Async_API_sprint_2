@@ -1,25 +1,33 @@
 from functools import lru_cache
+from dataclasses import dataclass
 
 from aioredis import Redis
 from fastapi import Depends
+from pydantic import BaseModel
 
 from src.db.elastic import get_elastic
 from src.db.redis import get_redis
 from src.models import genre
 from src.services.base import BaseService
-from src.providers.base import DataProvider
-from src.providers.elastic import Elastic
+from src.storages.base import DataStorage
+from src.storages.elastic import ElasticStorage
 
 
-async def get_data_provider() -> Elastic:
+async def get_data_storage() -> ElasticStorage:
     es = await get_elastic()
-    return Elastic(es=es, index='genres')
+    return ElasticStorage(es=es, index='genres')
+
+
+@dataclass
+class GenreService(BaseService):
+    """Сервис жанра."""
+    model: BaseModel = genre.Genre
+    cache_key_prefix: str = 'genres'
 
 
 @lru_cache()
 def get_genre_service(
         redis: Redis = Depends(get_redis),
-        data_provider: DataProvider = Depends(get_data_provider),
-) -> BaseService:
-    return BaseService(redis=redis, data_provider=data_provider,
-                       model=genre.Genre, cache_key_prefix='genres')
+        data_storage: DataStorage = Depends(get_data_storage),
+) -> GenreService:
+    return GenreService(redis=redis, data_storage=data_storage)
