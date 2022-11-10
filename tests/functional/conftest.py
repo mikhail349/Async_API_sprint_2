@@ -1,15 +1,15 @@
 import asyncio
-import uuid
 
 import aioredis
 import pytest
 from elasticsearch import AsyncElasticsearch, helpers
-from faker import Faker
 
 from tests.functional import settings
-from tests.functional.src.lib import models
-
-fake = Faker()
+from tests.functional.src.lib.api_client import APIClient
+from tests.functional.src.lib.entity_factory import (
+    generate_random_genre,
+    generate_random_person,
+)
 
 
 @pytest.fixture(scope="session")
@@ -19,8 +19,9 @@ def event_loop():
     loop.close()
 
 
-@pytest.fixture(scope="session")
-async def es(event_loop):
+@pytest.fixture
+async def es():
+    """Клиент elastic."""
     client = AsyncElasticsearch(
         hosts=[
             f"{settings.test_settings.ELASTIC_HOST}:"
@@ -29,11 +30,11 @@ async def es(event_loop):
     )
     yield client
     await client.close()
-    # event_loop.run_until_complete(client.close())
 
 
 @pytest.fixture
 async def redis_client():
+    """Клиент redis."""
     redis = await aioredis.create_redis_pool(
         (settings.test_settings.REDIS_HOST, settings.test_settings.REDIS_PORT)
     )
@@ -44,22 +45,72 @@ async def redis_client():
 
 
 @pytest.fixture
-async def genre_data(es):
-    return [
-        models.genre.Genre(
-            id=str(uuid.uuid4()), name=fake.word(), description=fake.text()
-        )
-    ]
+async def api_client():
+    """Объект клиента для работы с API."""
+    return APIClient()
 
 
 @pytest.fixture
-async def genre(es, genre_data):
+async def genre(es):
+    """Создание жанра в базе."""
+    genre_data = generate_random_genre()
     query = [
-        {"_index": "genres", "_id": dict(g)["id"], "_source": dict(g)}
-        for g in genre_data
+        {
+            "_index": "genres",
+            "_id": dict(genre_data)["id"],
+            "_source": dict(genre_data),
+        }
     ]
     rows_count, errors = await helpers.async_bulk(es, query)
     if errors:
         raise Exception("Ошибка записи в Elasticsearch")
-    yield genre_data[0]
+    yield genre_data
+    await es.close()
+
+
+@pytest.fixture
+async def genres(es):
+    """Создание 100 жанров в базе."""
+    genres_data = [generate_random_genre() for _ in range(100)]
+    query = [
+        {"_index": "genres", "_id": dict(i)["id"], "_source": dict(i)}
+        for i in genres_data
+    ]
+    rows_count, errors = await helpers.async_bulk(es, query)
+    if errors:
+        raise Exception("Ошибка записи в Elasticsearch")
+    yield genres_data
+    await es.close()
+
+
+@pytest.fixture
+async def person(es):
+    """Создание персоны в базе."""
+    person_data = generate_random_person()
+    query = [
+        {
+            "_index": "persons",
+            "_id": dict(person_data)["id"],
+            "_source": dict(person_data),
+        }
+    ]
+    rows_count, errors = await helpers.async_bulk(es, query)
+    if errors:
+        raise Exception("Ошибка записи в Elasticsearch")
+    yield person_data
+    await es.close()
+
+
+@pytest.fixture
+async def persons(es):
+    """Создание 100 персон в базе."""
+    persons_data = [generate_random_person() for _ in range(100)]
+    query = [
+        {"_index": "persons", "_id": dict(i)["id"], "_source": dict(i)}
+        for i in persons_data
+    ]
+    rows_count, errors = await helpers.async_bulk(es, query)
+    if errors:
+        raise Exception("Ошибка записи в Elasticsearch")
+    yield persons_data
     await es.close()
