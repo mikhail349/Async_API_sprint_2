@@ -1,6 +1,7 @@
 from elasticsearch import AsyncElasticsearch
 
-from src.db.elastic import ElasticStorage, get_elastic
+from src.db.elastic import get_elastic
+from src.storages.elastic import ElasticStorage
 
 
 class GenreElasticStorage(ElasticStorage):

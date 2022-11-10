@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from fastapi import Depends
 from pydantic import BaseModel
 
-from src.db.redis import get_redis_storage, RedisStorage
+from src.storages.redis import get_redis_storage, RedisStorage
 from src.storages.base import DataStorage
 from src.models.film import Film
 from src.services.base import BaseService

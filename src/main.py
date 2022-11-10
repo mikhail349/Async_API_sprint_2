@@ -9,8 +9,7 @@ from fastapi.responses import ORJSONResponse
 from src.api.v1 import films, genres, persons
 from src.core import config
 from src.core.logger import LOGGING
-from src.db import redis
-from src.db import elastic
+from src.db import redis, elastic
 
 app = FastAPI(
     title=config.project_settings.PROJECT_NAME,

@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from src.api.v1.query_params.base import Page
 from src.storages.base import DataStorage
-from src.db.redis import RedisStorage
+from src.storages.redis import RedisStorage
 
 
 @dataclass
