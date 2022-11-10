@@ -7,10 +7,10 @@ from src.storages.elastic import ElasticStorage
 
 class PersonElasticStorage(ElasticStorage):
     """Класс получения персоналий из ElasticSearch.
-    
+
     Args:
         es: соединение с ElasticSearch
-    
+
     """
     def __init__(self, es: AsyncElasticsearch) -> None:
         super().__init__(es=es, index='persons')
@@ -32,10 +32,10 @@ class PersonElasticStorage(ElasticStorage):
 
 async def get_data_storage() -> PersonElasticStorage:
     """Получить инстанс класса получения персоналий из ElasticSearch.
-    
+
     Returns:
         PersonElasticStorage: Класс получения персоналий из ElasticSearch
-    
+
     """
     es = await get_elastic()
     return PersonElasticStorage(es=es)

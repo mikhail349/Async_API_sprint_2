@@ -42,10 +42,10 @@ class RedisStorage:
 
 async def get_redis_storage() -> RedisStorage:
     """Получить инстанс класса хранилища Redis
-    
+
     Returns:
         RedisStorage: Класс хранилища Redis
-    
+
     """
     redis = await get_redis()
     return RedisStorage(redis=redis)

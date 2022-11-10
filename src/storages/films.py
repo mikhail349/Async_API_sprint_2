@@ -9,10 +9,10 @@ from src.storages.elastic import ElasticStorage
 
 class FilmElasticStorage(ElasticStorage):
     """Класс получения кинопроизведений из ElasticSearch.
-    
+
     Args:
         es: соединение с ElasticSearch
-    
+
     """
     def __init__(self, es: AsyncElasticsearch) -> None:
         super().__init__(es=es, index='movies')
@@ -56,10 +56,10 @@ class FilmElasticStorage(ElasticStorage):
 
 async def get_data_storage() -> FilmElasticStorage:
     """Получить инстанс класса получения кинопроизведений из ElasticSearch.
-    
+
     Returns:
         FilmElasticStorage: Класс получения кинопроизведений из ElasticSearch
-    
+
     """
     es = await get_elastic()
     return FilmElasticStorage(es=es)

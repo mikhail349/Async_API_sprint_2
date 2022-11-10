@@ -9,9 +9,9 @@ es: Optional[AsyncElasticsearch] = None
 
 async def get_elastic() -> AsyncElasticsearch:
     """Получить соединение с ElasticSearch.
-    
+
     Returns:
         AsyncElasticsearch: соединение с ElasticSearch
-    
+
     """
     return es

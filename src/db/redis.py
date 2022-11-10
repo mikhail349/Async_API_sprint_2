@@ -9,9 +9,9 @@ redis: Optional[Redis] = None
 
 async def get_redis() -> Redis:
     """Получить соединение с Redis.
-    
+
     Returns:
         Redis: соединение с Redis
-    
+
     """
     return redis
