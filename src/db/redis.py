@@ -5,6 +5,17 @@ from aioredis import Redis
 from src.core import config
 
 redis: Optional[Redis] = None
+"""Соединение с Redis."""
+
+
+async def get_redis() -> Redis:
+    """Получить соединение с Redis.
+    
+    Returns:
+        Redis: соединение с Redis
+    
+    """
+    return redis
 
 
 class RedisStorage:
@@ -42,4 +53,11 @@ class RedisStorage:
 
 
 async def get_redis_storage() -> RedisStorage:
+    """Получить инстанс класса хранилища Redis
+    
+    Returns:
+        RedisStorage: Класс хранилища Redis
+    
+    """
+    redis = await get_redis()
     return RedisStorage(redis=redis)
