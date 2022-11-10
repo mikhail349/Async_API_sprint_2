@@ -1,43 +1,27 @@
-from dataclasses import dataclass
 from functools import lru_cache
+from dataclasses import dataclass
 
-from aioredis import Redis
-from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
+from pydantic import BaseModel
 
-from src.api.v1.query_params.persons import Filter
-from src.db.elastic import get_elastic
-from src.db.redis import get_redis
+from src.storages.redis import get_redis_storage, RedisStorage
 from src.models import person
 from src.services.base import BaseService
+from src.storages.base import DataStorage
+from src.storages.persons import get_data_storage
 
 
 @dataclass
 class PersonService(BaseService):
-
-    def __post_init__(self):
-        self.model = person.Person
-        self.es_index = 'persons'
-        self.es_search_fields = ['full_name']
-
-    def compose_filters(self, filter: Filter) -> list[dict]:
-        filters = []
-
-        if filter.role:
-            filters.append(
-                {
-                    'term': {
-                        'roles': filter.role
-                    }
-                }
-            )
-
-        return filters
+    """Сервис персоны."""
+    model: BaseModel = person.Person
+    cache_key_prefix: str = 'persons'
 
 
 @lru_cache()
 def get_person_service(
-        redis: Redis = Depends(get_redis),
-        elastic: AsyncElasticsearch = Depends(get_elastic),
+        redis_storage: RedisStorage = Depends(get_redis_storage),
+        data_storage: DataStorage = Depends(get_data_storage),
 ) -> PersonService:
-    return PersonService(redis=redis, elastic=elastic)
+    return PersonService(redis_storage=redis_storage,
+                         data_storage=data_storage)
