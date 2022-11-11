@@ -19,13 +19,13 @@ class Page(BaseModel):
 def get_page(
     number: int = Query(
         default=1,
-        gt=0,
+        ge=1,
         description="Номер страницы",
         alias="page[number]"
     ),
     size: int = Query(
         default=config.elastic_settings.ELASTIC_DEFAULT_PAGE_SIZE,
-        gt=0,
+        ge=1,
         description="Размер страницы",
         alias="page[size]",
     )
