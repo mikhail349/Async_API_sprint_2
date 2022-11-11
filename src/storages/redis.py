@@ -1,6 +1,7 @@
 from typing import Optional, Any
 
 from aioredis import Redis
+import backoff
 
 from src.core import config
 from src.db.redis import get_redis
@@ -16,6 +17,9 @@ class RedisStorage:
     def __init__(self, redis: Redis) -> None:
         self.redis = redis
 
+    @backoff.on_exception(backoff.expo,
+                          exception=OSError,
+                          max_time=config.redis_settings.BACKOFF_MAX_TIME)
     async def get(self, key: str) -> Optional[Any]:
         """Получить данные по ключу из кэша.
 
@@ -28,6 +32,9 @@ class RedisStorage:
         """
         return await self.redis.get(key)
 
+    @backoff.on_exception(backoff.expo,
+                          exception=OSError,
+                          max_time=config.redis_settings.BACKOFF_MAX_TIME)
     async def put(self, key: str, value: Any):
         """Записать данные в кэш.
 
