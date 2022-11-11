@@ -1,10 +1,13 @@
 from typing import Optional, Any
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
+from elasticsearch.exceptions import ConnectionError, TransportError
 from pydantic import BaseModel
+import backoff
 
 from src.storages.base import DataStorage
 from src.api.v1.query_params.base import Page
+from src.core.config import elastic_settings
 
 
 class ElasticStorage(DataStorage):
@@ -44,6 +47,9 @@ class ElasticStorage(DataStorage):
         """
         return []
 
+    @backoff.on_exception(backoff.expo,
+                          exception=(ConnectionError, TransportError),
+                          max_time=elastic_settings.BACKOFF_MAX_TIME)
     async def get_obj(self, id: str) -> Optional[Any]:
         try:
             doc = await self.es.get(self.index, id)
@@ -52,6 +58,9 @@ class ElasticStorage(DataStorage):
 
         return doc['_source']
 
+    @backoff.on_exception(backoff.expo,
+                          exception=(ConnectionError, TransportError),
+                          max_time=elastic_settings.BACKOFF_MAX_TIME)
     async def get_objects(
         self,
         page: Page,

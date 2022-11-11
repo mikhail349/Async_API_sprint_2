@@ -37,6 +37,8 @@ class RedisSettings(BaseConfig):
     """PORT для подклчючения к Redis."""
     CACHE_EXPIRE_IN_SECONDS: int = 60 * 5
     """Кэширование кинопроизведений в секундах."""
+    BACKOFF_MAX_TIME: float = 10
+    """Максимальное кол-во секунд для backoff"""
 
 
 class ElasticSettings(BaseConfig):
@@ -48,6 +50,8 @@ class ElasticSettings(BaseConfig):
     """PORT для подклчючения к ElasticSearch."""
     ELASTIC_DEFAULT_PAGE_SIZE: int = 10
     """Размер ES-страницы по умолчанию."""
+    BACKOFF_MAX_TIME: float = 10
+    """Максимальное кол-во секунд для backoff"""
 
 
 project_settings = ProjectSettings()
