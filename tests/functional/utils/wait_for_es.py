@@ -1,7 +1,7 @@
-import logging
-
 import backoff
+
 from tests.functional.utils.es_client import get_elastic
+from tests.functional.utils.logger import logger
 
 
 @backoff.on_exception(wait_gen=backoff.expo, exception=ConnectionError)
@@ -10,10 +10,10 @@ def wait_for_es():
     es = get_elastic()
     response = es.ping()
     if response:
-        logging.info("Elastic is ready!")
+        logger.info("Elastic is ready!")
         es.close()
     else:
-        logging.info("Waiting for elastic")
+        logger.info("Waiting for elastic")
         raise ConnectionError
 
 

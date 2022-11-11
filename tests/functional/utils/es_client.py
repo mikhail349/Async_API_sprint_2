@@ -1,4 +1,5 @@
 from elasticsearch import Elasticsearch
+
 from tests.functional.settings import test_settings
 
 es = Elasticsearch(
