@@ -1,0 +1,39 @@
+version: '3'
+services:
+  backend:
+    build: ../../.
+    env_file:
+      - .env
+    restart: always
+    depends_on:
+      - elastic
+      - redis
+    ports:
+      - "8000:8000"
+
+  elastic:
+    image: elasticsearch:7.17.6
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
+    restart: always
+    ports:
+      - "9200:9200"
+
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
+  tests:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    entrypoint: >
+      sh -c "python3 utils/wait_for_es.py
+      && python3 utils/es_setup.py
+      && python3 utils/wait_for_redis.py
+      && pytest src"
