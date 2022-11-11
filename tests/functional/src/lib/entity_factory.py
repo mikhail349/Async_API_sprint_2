@@ -1,3 +1,4 @@
+import random
 import uuid
 
 from faker import Faker
@@ -20,6 +21,6 @@ def generate_random_person() -> Person:
     return Person(
         id=str(uuid.uuid4()),
         full_name=fake.name(),
-        roles=["actor"],
+        roles=[random.choice(["actor", "writer", "director"])],
         film_ids=[str(uuid.uuid4())],
     )
