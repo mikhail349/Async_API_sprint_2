@@ -40,5 +40,5 @@ async def connect_elastic() -> AsyncElasticsearch:
 
 async def close_elastic():
     """Закрыть соединение с ElasticSearch."""
-    es = await get_elastic()
-    es.close()
+    global es
+    await es.close()

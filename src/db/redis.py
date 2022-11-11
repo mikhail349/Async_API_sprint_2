@@ -40,6 +40,6 @@ async def connect_redis() -> Redis:
 
 async def close_redis():
     """Закрыть соединение с Redis."""
-    redis = await get_redis()
+    global redis
     redis.close()
     await redis.wait_closed()
