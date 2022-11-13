@@ -12,5 +12,7 @@ class TestSettings(BaseSettings):
     REDIS_PORT: int = 6379
     """PORT для подклчючения к Redis."""
 
+    API: str = "http://localhost:8000/api/v1/"
+
 
 test_settings = TestSettings()
