@@ -1,6 +1,5 @@
 import asyncio
 
-import aioredis
 import pytest
 from elasticsearch import AsyncElasticsearch, helpers
 from pydantic import BaseModel
@@ -34,33 +33,23 @@ async def es():
 @pytest.fixture
 def es_write_data(es):
     """Фикстура для записи данных в slastic."""
+
     async def inner(index: str, data: list[BaseModel]):
         query = [
-            {"_index": index, "_id": dict(i)["id"], "_source": dict(i)}
+            {"_index": index, "_id": i.id, "_source": dict(i)}
             for i in data
         ]
         rows_count, errors = await helpers.async_bulk(es, query)
         if errors:
             raise Exception("Ошибка записи в Elasticsearch")
+
     return inner
-
-
-@pytest.fixture(scope="session")
-async def redis_client():
-    """Клиент redis."""
-    redis = await aioredis.create_redis_pool(
-        (settings.test_settings.REDIS_HOST, settings.test_settings.REDIS_PORT)
-    )
-    yield redis
-    await redis.flushall(async_op=True)
-    redis.close()
-    await redis.wait_closed()
 
 
 @pytest.fixture
 async def api_client():
     """Объект клиента для работы с API."""
-    return APIClient()
+    yield APIClient()
 
 
 @pytest.fixture
