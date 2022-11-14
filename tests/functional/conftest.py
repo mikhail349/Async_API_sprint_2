@@ -1,4 +1,5 @@
 import asyncio
+from dataclasses import dataclass
 
 import pytest
 from elasticsearch import AsyncElasticsearch, helpers
@@ -35,13 +36,13 @@ async def es():
 def es_data(es):
     """Получить конструктор для добавления и удаления данных в ES."""
     def inner(index: str, data: list[BaseModel]):
-        class DataHandler:
 
-            def __init__(self, index: str, data: list[BaseModel], es_client: AsyncElasticsearch) -> None:
-                self.index = index
-                self.data = data
-                self.es_client = es_client
-            
+        @dataclass
+        class DataHandler:
+            index: str
+            data: list[BaseModel]
+            es_client: AsyncElasticsearch
+
             async def insert(self):
                 query = [
                     {"_index": self.index, "_id": i.id, "_source": dict(i)}
