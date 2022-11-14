@@ -84,7 +84,7 @@ async def test_cache(person, es, api_client):
 async def test_filter_by_role(persons, api_client):
     """Проверка фильтрации по ролям."""
     data, status = await api_client.get(
-        f"persons", **{"filter[role]": "actor"}
+        "persons", **{"filter[role]": "actor"}
     )
     assert status == 200
     assert all("actor" in obj["roles"] for obj in data)
@@ -95,7 +95,7 @@ async def test_filter_by_role(persons, api_client):
 async def test_sort(persons, reverse, api_client):
     """Проверка сортировки."""
     perfix = "-" if reverse else ""
-    data, status = await api_client.get(f"persons", **{"sort": f"{perfix}id"})
+    data, status = await api_client.get("persons", **{"sort": f"{perfix}id"})
     assert status == 200
     assert [obj["id"] for obj in data] == sorted(
         [obj["id"] for obj in data], reverse=reverse
