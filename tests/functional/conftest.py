@@ -39,7 +39,7 @@ def es_write_data(es):
             {"_index": index, "_id": i.id, "_source": dict(i)}
             for i in data
         ]
-        rows_count, errors = await helpers.async_bulk(es, query)
+        rows_count, errors = await helpers.async_bulk(es, query, refresh=True)
         if errors:
             raise Exception("Ошибка записи в Elasticsearch")
 
