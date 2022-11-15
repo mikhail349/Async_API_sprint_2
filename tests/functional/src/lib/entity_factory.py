@@ -15,10 +15,10 @@ fake = Faker()
 
 def generate_random_genre(name: str = None) -> Genre:
     """Возвращает рандомный объект Genre.
-    
+
     Args:
         name: название (по умолчанию - сгенерировать)
-    
+
     """
     return Genre(
         id=str(uuid.uuid4()),
@@ -29,10 +29,10 @@ def generate_random_genre(name: str = None) -> Genre:
 
 def generate_random_person(name: str = None) -> Person:
     """Возвращает рандомный объект Person.
-    
+
     Args:
         name: имя (по умолчанию - сгенерировать)
-    
+
     """
     return Person(
         id=str(uuid.uuid4()),
@@ -44,7 +44,7 @@ def generate_random_person(name: str = None) -> Person:
 
 def generate_random_film(title: str = None, description: str = None) -> Film:
     """Возвращает рандомный объект Person.
-    
+
     Args:
         title: название (по умолчанию - сгенерировать)
         description: описание (по умолчанию - сгенерировать)
