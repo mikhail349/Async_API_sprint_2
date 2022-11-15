@@ -35,14 +35,15 @@ async def test_search_persons(persons_search, api_client, es,
 
     async def _assert():
         """Основной метод проверки персоналий."""
-        data, status = await api_client.get('persons/search', **query_params['params'])
+        data, status = await api_client.get('persons/search',
+                                            **query_params['params'])
         assert status == expected_answer['status']
 
         if 'length' in expected_answer:
             assert len(data) == expected_answer['length']
         if 'msg' in expected_answer:
             assert data['detail'][0]['msg'] == expected_answer['msg']
-    
+
     _assert()
     if query_params.get('test_cache'):
         for person in persons_search:
@@ -82,7 +83,8 @@ async def test_search_genres(genres_search, api_client, es,
 
     async def _assert():
         """Основной метод проверки жанров."""
-        data, status = await api_client.get('genres/search', **query_params['params'])
+        data, status = await api_client.get('genres/search',
+                                            **query_params['params'])
         assert status == expected_answer['status']
 
         if 'length' in expected_answer:
@@ -95,6 +97,7 @@ async def test_search_genres(genres_search, api_client, es,
         for genre in genres_search:
             await es.delete('genres', genre.id)
         _assert()
+
 
 @pytest.mark.parametrize(
     "query_params, expected_answer",
@@ -128,7 +131,8 @@ async def test_search_films(films_search, api_client, es,
 
     async def _assert():
         """Основной метод проверки фильмов."""
-        data, status = await api_client.get('films/search', **query_params['params'])
+        data, status = await api_client.get('films/search',
+                                            **query_params['params'])
         assert status == expected_answer['status']
 
         if 'length' in expected_answer:
