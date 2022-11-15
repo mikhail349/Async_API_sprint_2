@@ -13,39 +13,42 @@ from tests.functional.src.lib.models.film import (Film,
 fake = Faker()
 
 
-def generate_random_genre(name: str = None) -> Genre:
+def generate_random_genre(id: str = None, name: str = None) -> Genre:
     """Возвращает рандомный объект Genre.
 
     Args:
+        id: идентификатор (по умолчанию - сгенерировать)
         name: название (по умолчанию - сгенерировать)
 
     """
     return Genre(
-        id=str(uuid.uuid4()),
+        id=id or str(uuid.uuid4()),
         name=name or fake.word(),
         description=fake.text()
     )
 
 
-def generate_random_person(name: str = None) -> Person:
+def generate_random_person(id: str = None, name: str = None) -> Person:
     """Возвращает рандомный объект Person.
 
     Args:
+        id: идентификатор (по умолчанию - сгенерировать)
         name: имя (по умолчанию - сгенерировать)
 
     """
     return Person(
-        id=str(uuid.uuid4()),
+        id=id or str(uuid.uuid4()),
         full_name=name or fake.name(),
         roles=[random.choice(["actor", "writer", "director"])],
         film_ids=[str(uuid.uuid4())],
     )
 
 
-def generate_random_film(title: str = None, description: str = None) -> Film:
-    """Возвращает рандомный объект Person.
+def generate_random_film(id: str = None, title: str = None, description: str = None) -> Film:
+    """Возвращает рандомный объект Film.
 
     Args:
+        id: идентификатор (по умолчанию - сгенерировать)
         title: название (по умолчанию - сгенерировать)
         description: описание (по умолчанию - сгенерировать)
 
@@ -64,7 +67,7 @@ def generate_random_film(title: str = None, description: str = None) -> Film:
     genres = [generate_random_filmgenre() for _ in range(5)]
 
     return Film(
-        id=str(uuid.uuid4()),
+        id=id or str(uuid.uuid4()),
         title=title or fake.text(),
         description=description or fake.text(),
         imdb_rating=fake.random_int(0, 10),
