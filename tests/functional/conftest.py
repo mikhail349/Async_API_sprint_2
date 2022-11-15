@@ -145,7 +145,7 @@ async def persons_search(es_data):
 async def genres_search(es_data):
     """Создание жанров в базе для поиска и последующее удаление."""
 
-    names = ['action', 'adventure', 'horror']
+    names = ['action', 'reality show', 'talk show']
     genres = [generate_random_genre(name=name) for name in names]
     
     es = es_data('genres', genres)
