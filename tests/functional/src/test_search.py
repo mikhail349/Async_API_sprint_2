@@ -14,16 +14,16 @@ async def assert_data(endpoint_prefix: str,
                       query_params: dict,
                       expected_answer: dict):
     """Основной метод проверки.
-    
+
     Args:
         endpoint_prefix: префикс эндпоинта
         es_index: название индекса
-        data: список объектов 
+        data: список объектов
         api_client: клиент для выполнения API запроса
         es_client: клиент ElasticSearch
         query_params: словарь с входными данными
         expected_answer: словарь с ожидаемым ответом
-    
+
     """
     async def _assert():
         response, status = await api_client.get(f'{endpoint_prefix}/search',

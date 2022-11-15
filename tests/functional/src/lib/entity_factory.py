@@ -44,13 +44,12 @@ def generate_random_person(id: str = None, name: str = None) -> Person:
     )
 
 
-def generate_random_film(id: str = None, title: str = None, description: str = None) -> Film:
+def generate_random_film(id: str = None, title: str = None) -> Film:
     """Возвращает рандомный объект Film.
 
     Args:
         id: идентификатор (по умолчанию - сгенерировать)
         title: название (по умолчанию - сгенерировать)
-        description: описание (по умолчанию - сгенерировать)
 
     """
     def generate_random_filmperson() -> FilmPerson:
@@ -68,8 +67,8 @@ def generate_random_film(id: str = None, title: str = None, description: str = N
 
     return Film(
         id=id or str(uuid.uuid4()),
-        title=title or fake.text(),
-        description=description or fake.text(),
+        title=title or fake.word(),
+        description=fake.text(),
         imdb_rating=fake.random_int(0, 10),
         actors=actors,
         writers=writers,
