@@ -1,6 +1,48 @@
 import pytest
+from pydantic import BaseModel
 
 from tests.functional.testdata import messages
+from tests.functional.src.lib.api_client import APIClient
+from elasticsearch import AsyncElasticsearch
+
+
+async def assert_data(endpoint_prefix: str,
+                      es_index: str,
+                      data: list[BaseModel],
+                      api_client: APIClient,
+                      es_client: AsyncElasticsearch,
+                      query_params: dict,
+                      expected_answer: dict):
+    """Основной метод проверки.
+    
+    Args:
+        endpoint_prefix: префикс эндпоинта
+        es_index: название индекса
+        data: список объектов 
+        api_client: клиент для выполнения API запроса
+        es_client: клиент ElasticSearch
+        query_params: словарь с входными данными
+        expected_answer: словарь с ожидаемым ответом
+    
+    """
+    async def _assert():
+        response, status = await api_client.get(f'{endpoint_prefix}/search',
+                                                **query_params['params'])
+        assert status == expected_answer['status']
+
+        if 'length' in expected_answer:
+            assert len(response) == expected_answer['length']
+        if 'msg' in expected_answer:
+            assert response['detail'][0]['msg'] == expected_answer['msg']
+        if 'ids' in expected_answer:
+            response_ids = [row['id'] for row in response]
+            assert set(response_ids) == set(expected_answer['ids'])
+
+    await _assert()
+    if query_params.get('test_cache'):
+        for item in data:
+            await es_client.delete(es_index, item.id)
+        await _assert()
 
 
 @pytest.mark.parametrize(
@@ -8,11 +50,11 @@ from tests.functional.testdata import messages
     [
         (
             {'params': {'query': 'john'}},
-            {'status': 200, 'length': 2}
+            {'status': 200, 'length': 2, 'ids': ('1', '2')}
         ),
         (
             {'params': {'query': 'john', 'page[size]': 1}},
-            {'status': 200, 'length': 1}
+            {'status': 200, 'length': 1, 'ids': ('1',)}
         ),
         (
             {'params': {'query': ''}},
@@ -24,7 +66,7 @@ from tests.functional.testdata import messages
         ),
         (
             {'params': {'query': 'john'}, 'test_cache': True},
-            {'status': 200, 'length': 2}
+            {'status': 200, 'length': 2, 'ids': ('1', '2')}
         ),
     ],
 )
@@ -32,23 +74,15 @@ from tests.functional.testdata import messages
 async def test_search_persons(persons_search, api_client, es,
                               query_params, expected_answer):
     """Проверить поиск персоналий."""
-
-    async def _assert():
-        """Основной метод проверки персоналий."""
-        data, status = await api_client.get('persons/search',
-                                            **query_params['params'])
-        assert status == expected_answer['status']
-
-        if 'length' in expected_answer:
-            assert len(data) == expected_answer['length']
-        if 'msg' in expected_answer:
-            assert data['detail'][0]['msg'] == expected_answer['msg']
-
-    _assert()
-    if query_params.get('test_cache'):
-        for person in persons_search:
-            await es.delete('persons', person.id)
-        _assert()
+    await assert_data(
+        endpoint_prefix='persons',
+        es_index='persons',
+        data=persons_search,
+        api_client=api_client,
+        es_client=es,
+        query_params=query_params,
+        expected_answer=expected_answer
+    )
 
 
 @pytest.mark.parametrize(
@@ -56,11 +90,11 @@ async def test_search_persons(persons_search, api_client, es,
     [
         (
             {'params': {'query': 'show'}},
-            {'status': 200, 'length': 2}
+            {'status': 200, 'length': 2, 'ids': ('2', '3')}
         ),
         (
             {'params': {'query': 'show', 'page[size]': 1}},
-            {'status': 200, 'length': 1}
+            {'status': 200, 'length': 1, 'ids': ('2',)}
         ),
         (
             {'params': {'query': ''}},
@@ -72,7 +106,7 @@ async def test_search_persons(persons_search, api_client, es,
         ),
         (
             {'params': {'query': 'show'}, 'test_cache': True},
-            {'status': 200, 'length': 2}
+            {'status': 200, 'length': 2, 'ids': ('2', '3')}
         ),
     ],
 )
@@ -80,23 +114,15 @@ async def test_search_persons(persons_search, api_client, es,
 async def test_search_genres(genres_search, api_client, es,
                              query_params, expected_answer):
     """Проверить поиск жанров."""
-
-    async def _assert():
-        """Основной метод проверки жанров."""
-        data, status = await api_client.get('genres/search',
-                                            **query_params['params'])
-        assert status == expected_answer['status']
-
-        if 'length' in expected_answer:
-            assert len(data) == expected_answer['length']
-        if 'msg' in expected_answer:
-            assert data["detail"][0]["msg"] == expected_answer['msg']
-
-    _assert()
-    if query_params.get('test_cache'):
-        for genre in genres_search:
-            await es.delete('genres', genre.id)
-        _assert()
+    await assert_data(
+        endpoint_prefix='genres',
+        es_index='genres',
+        data=genres_search,
+        api_client=api_client,
+        es_client=es,
+        query_params=query_params,
+        expected_answer=expected_answer
+    )
 
 
 @pytest.mark.parametrize(
@@ -104,11 +130,11 @@ async def test_search_genres(genres_search, api_client, es,
     [
         (
             {'params': {'query': 'war'}},
-            {'status': 200, 'length': 2}
+            {'status': 200, 'length': 2, 'ids': ('1', '2')}
         ),
         (
             {'params': {'query': 'war', 'page[size]': 1}},
-            {'status': 200, 'length': 1}
+            {'status': 200, 'length': 1, 'ids': ('1',)}
         ),
         (
             {'params': {'query': ''}},
@@ -120,7 +146,7 @@ async def test_search_genres(genres_search, api_client, es,
         ),
         (
             {'params': {'query': 'war'}, 'test_cache': True},
-            {'status': 200, 'length': 2}
+            {'status': 200, 'length': 2, 'ids': ('1', '2')}
         ),
     ],
 )
@@ -128,20 +154,12 @@ async def test_search_genres(genres_search, api_client, es,
 async def test_search_films(films_search, api_client, es,
                             query_params, expected_answer):
     """Проверить поиск фильмов."""
-
-    async def _assert():
-        """Основной метод проверки фильмов."""
-        data, status = await api_client.get('films/search',
-                                            **query_params['params'])
-        assert status == expected_answer['status']
-
-        if 'length' in expected_answer:
-            assert len(data) == expected_answer['length']
-        if 'msg' in expected_answer:
-            assert data["detail"][0]["msg"] == expected_answer['msg']
-
-    _assert()
-    if query_params.get('test_cache'):
-        for film in films_search:
-            await es.delete('movies', film.id)
-        _assert()
+    await assert_data(
+        endpoint_prefix='films',
+        es_index='movies',
+        data=films_search,
+        api_client=api_client,
+        es_client=es,
+        query_params=query_params,
+        expected_answer=expected_answer
+    )
