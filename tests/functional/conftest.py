@@ -137,7 +137,7 @@ async def persons_search(es_data):
     
     es = es_data('persons', persons)
     await es.insert()
-    yield None
+    yield persons
     await es.delete()
 
 
@@ -150,7 +150,7 @@ async def genres_search(es_data):
     
     es = es_data('genres', genres)
     await es.insert()
-    yield None
+    yield genres
     await es.delete()
 
 
@@ -163,5 +163,5 @@ async def films_search(es_data):
     
     es = es_data('movies', films)
     await es.insert()
-    yield None
+    yield films
     await es.delete()
