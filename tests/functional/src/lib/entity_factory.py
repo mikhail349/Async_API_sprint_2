@@ -5,6 +5,10 @@ from faker import Faker
 
 from tests.functional.src.lib.models.genre import Genre
 from tests.functional.src.lib.models.person import Person
+from tests.functional.src.lib.models.film import (Film,
+                                                  Person as FilmPerson,
+                                                  Genre as FilmGenre)
+
 
 fake = Faker()
 
@@ -35,4 +39,39 @@ def generate_random_person(name: str = None) -> Person:
         full_name=name or fake.name(),
         roles=[random.choice(["actor", "writer", "director"])],
         film_ids=[str(uuid.uuid4())],
+    )
+
+
+def generate_random_film(title: str = None, description: str = None) -> Film:
+    """Возвращает рандомный объект Person.
+    
+    Args:
+        title: название (по умолчанию - сгенерировать)
+        description: описание (по умолчанию - сгенерировать)
+
+    """
+    def generate_random_filmperson() -> FilmPerson:
+        """Возвращает рандомный объект FilmPerson."""
+        return FilmPerson(id=str(uuid.uuid4()), name=fake.name())
+
+    def generate_random_filmgenre() -> FilmGenre:
+        """Возвращает рандомный объект FilmGenre."""
+        return FilmGenre(id=str(uuid.uuid4()), name=fake.text())
+
+    actors = [generate_random_filmperson() for _ in range(3)]
+    writers = [generate_random_filmperson() for _ in range(3)]
+    directors = [generate_random_filmperson() for _ in range(3)]
+    genres = [generate_random_filmgenre() for _ in range(5)]
+
+    return Film(
+        id=str(uuid.uuid4()),
+        title=title or fake.text(),
+        description=description or fake.text(),
+        imdb_rating=fake.random_int(0, 10),
+        creation_date=fake.past_date(),
+        file_url=fake.image_url(),
+        actors=actors,
+        writers=writers,
+        directors=directors,
+        genres=genres
     )
