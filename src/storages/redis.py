@@ -5,9 +5,10 @@ import backoff
 
 from src.core import config
 from src.db.redis import get_redis
+from src.storages.base import CacheStorage
 
 
-class RedisStorage:
+class RedisStorage(CacheStorage):
     """Класс для работы с кэшом Redis.
 
     Args:
@@ -39,6 +40,7 @@ class RedisStorage:
         """Записать данные в кэш.
 
         Args:
+            key: ключ
             value: данные
 
         """

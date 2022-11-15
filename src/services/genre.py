@@ -4,10 +4,10 @@ from dataclasses import dataclass
 from fastapi import Depends
 from pydantic import BaseModel
 
-from src.storages.redis import get_redis_storage, RedisStorage
+from src.storages.redis import get_redis_storage
 from src.models import genre
 from src.services.base import BaseService
-from src.storages.base import DataStorage
+from src.storages.base import DataStorage, CacheStorage
 from src.storages.genres import get_data_storage
 
 
@@ -20,8 +20,8 @@ class GenreService(BaseService):
 
 @lru_cache()
 def get_genre_service(
-        redis_storage: RedisStorage = Depends(get_redis_storage),
+        cache_storage: CacheStorage = Depends(get_redis_storage),
         data_storage: DataStorage = Depends(get_data_storage),
 ) -> GenreService:
-    return GenreService(redis_storage=redis_storage,
+    return GenreService(cache_storage=cache_storage,
                         data_storage=data_storage)

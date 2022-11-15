@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Any, Optional
 
 from pydantic import BaseModel
 
 from src.api.v1.query_params.base import Page
-from src.storages.base import DataStorage
-from src.storages.redis import RedisStorage
+from src.storages.base import CacheStorage, DataStorage
 
 
 @dataclass
@@ -15,13 +14,13 @@ class BaseService:
     Args:
         model: класс модели
         data_storage: класс получения данных
-        redis_storage: класс для кэширования
+        cache_storage: класс для кэширования
         cache_key_prefix: префикс для ключа кэша
 
     """
     model: BaseModel = None
     data_storage: DataStorage = None
-    redis_storage: RedisStorage = None
+    cache_storage: CacheStorage = None
     cache_key_prefix: str = None
 
     def _get_objects_cache_key(
@@ -166,7 +165,7 @@ class BaseService:
                                           sort=sort,
                                           filter=filter)
 
-        objects = await self.redis_storage.get(key)
+        objects = await self.cache_storage.get(key)
         objects = self._transform_objects_from_cache(objects)
 
         if not objects:
@@ -181,7 +180,7 @@ class BaseService:
                 return []
 
             cache = self._transform_objects_to_cache(objects)
-            await self.redis_storage.put(key, cache)
+            await self.cache_storage.put(key, cache)
 
         return objects
 
@@ -231,7 +230,7 @@ class BaseService:
             Optional[model]: объект
 
         """
-        obj = await self.redis_storage.get(obj_id)
+        obj = await self.cache_storage.get(obj_id)
         obj = self._transform_obj_from_cache(obj)
 
         if not obj:
@@ -241,6 +240,6 @@ class BaseService:
                 return None
 
             cache = self._transform_obj_to_cache(obj)
-            await self.redis_storage.put(obj.id, cache)
+            await self.cache_storage.put(obj.id, cache)
 
         return obj

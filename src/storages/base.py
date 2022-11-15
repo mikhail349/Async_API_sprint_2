@@ -42,3 +42,29 @@ class DataStorage(ABC):
 
         """
         pass
+
+
+class CacheStorage(ABC):
+    """Абстрактный класс хранилища кеша."""
+
+    @abstractmethod
+    async def get(self, key: str) -> Optional[Any]:
+        """Получить данные по ключу из кэша.
+
+        Args:
+            key: ключ
+
+        Returns:
+            Optional[Any]: данные
+        """
+        pass
+
+    @abstractmethod
+    async def put(self, key: str, value: Any):
+        """Записать данные в кэш.
+
+        Args:
+            key: ключ
+            value: данные
+        """
+        pass
