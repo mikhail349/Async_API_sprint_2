@@ -60,7 +60,7 @@ def es_data(es):
             async def insert(self):
                 """Добавить данные в ES."""
                 query = [
-                    {"_index": self.index, "_id": i.id, "_source": dict(i)}
+                    {"_index": self.index, "_id": i.id, "_source": i.dict()}
                     for i in self.data
                 ]
                 _, errors = await helpers.async_bulk(self.es_client, query,
