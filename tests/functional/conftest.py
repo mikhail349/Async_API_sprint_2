@@ -9,7 +9,8 @@ from pydantic import BaseModel
 from tests.functional import settings
 from tests.functional.src.lib.api_client import APIClient
 from tests.functional.src.lib.entity_factory import (generate_random_genre,
-                                                     generate_random_person)
+                                                     generate_random_person,
+                                                     generate_random_film)
 
 
 @pytest.fixture(scope="session")
@@ -60,7 +61,7 @@ def es_data(es):
             async def insert(self):
                 """Добавить данные в ES."""
                 query = [
-                    {"_index": self.index, "_id": i.id, "_source": dict(i)}
+                    {"_index": self.index, "_id": i.id, "_source": i.dict()}
                     for i in self.data
                 ]
                 _, errors = await helpers.async_bulk(self.es_client, query,
@@ -148,6 +149,19 @@ async def genres_search(es_data):
     genres = [generate_random_genre(name=name) for name in names]
     
     es = es_data('genres', genres)
+    await es.insert()
+    yield None
+    await es.delete()
+
+
+@pytest.fixture
+async def films_search(es_data):
+    """Создание фильмов в базе для поиска и последующее удаление."""
+
+    titles = ['star wars', 'world war z', 'interstellar']
+    films = [generate_random_film(title=title) for title in titles]
+    
+    es = es_data('movies', films)
     await es.insert()
     yield None
     await es.delete()

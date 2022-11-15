@@ -56,7 +56,7 @@ def generate_random_film(title: str = None, description: str = None) -> Film:
 
     def generate_random_filmgenre() -> FilmGenre:
         """Возвращает рандомный объект FilmGenre."""
-        return FilmGenre(id=str(uuid.uuid4()), name=fake.text())
+        return FilmGenre(id=str(uuid.uuid4()), name=fake.word())
 
     actors = [generate_random_filmperson() for _ in range(3)]
     writers = [generate_random_filmperson() for _ in range(3)]
@@ -68,8 +68,6 @@ def generate_random_film(title: str = None, description: str = None) -> Film:
         title=title or fake.text(),
         description=description or fake.text(),
         imdb_rating=fake.random_int(0, 10),
-        creation_date=fake.past_date(),
-        file_url=fake.image_url(),
         actors=actors,
         writers=writers,
         directors=directors,

@@ -1,6 +1,4 @@
-import datetime
-
-from pydantic import BaseModel, FileUrl
+from pydantic import BaseModel
 
 
 class Person(BaseModel):
@@ -21,8 +19,6 @@ class Film(BaseModel):
     title: str
     description: str = None
     imdb_rating: float = None
-    creation_date: datetime.date = None
-    file_url: FileUrl = None
     actors: list[Person] = None
     writers: list[Person] = None
     directors: list[Person] = None
