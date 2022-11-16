@@ -4,7 +4,6 @@ from aioredis import Redis
 import backoff
 
 from src.core import config
-from src.db.redis import get_redis
 from src.storages.base import CacheStorage
 
 
@@ -47,14 +46,3 @@ class RedisStorage(CacheStorage):
         await self.redis.set(
             key, value,
             expire=config.redis_settings.CACHE_EXPIRE_IN_SECONDS)
-
-
-async def get_redis_storage() -> RedisStorage:
-    """Получить инстанс класса хранилища Redis
-
-    Returns:
-        RedisStorage: Класс хранилища Redis
-
-    """
-    redis = await get_redis()
-    return RedisStorage(redis=redis)

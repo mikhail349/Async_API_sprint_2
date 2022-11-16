@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from fastapi import Depends
 from pydantic import BaseModel
 
-from src.storages.redis import get_redis_storage
+from storages.base import get_cache_storage
 from src.storages.base import DataStorage, CacheStorage
 from src.models.film import Film
 from src.services.base import BaseService
@@ -20,7 +20,7 @@ class FilmService(BaseService):
 
 @lru_cache
 def get_film_service(
-        cache_storage: CacheStorage = Depends(get_redis_storage),
+        cache_storage: CacheStorage = Depends(get_cache_storage),
         data_storage: DataStorage = Depends(get_data_storage)
 ) -> FilmService:
     """Получить инстанс сервиса фильма.
