@@ -129,6 +129,26 @@ async def persons(es_data):
 
 
 @pytest.fixture
+async def film(es_data):
+    """Создание фильма в базе и последующее удаление."""
+    film_data = generate_random_film()
+    es = es_data('movies', [film_data])
+    await es.insert()
+    yield film_data
+    await es.delete()
+
+
+@pytest.fixture
+async def films(es_data):
+    """Создание 100 фильмов в базе и последующее удаление."""
+    films_data = [generate_random_film() for _ in range(100)]
+    es = es_data('movies', films_data)
+    await es.insert()
+    yield films_data
+    await es.delete()
+
+
+@pytest.fixture
 async def persons_search(es_data):
     """Создание персон в базе для поиска и последующее удаление."""
 
