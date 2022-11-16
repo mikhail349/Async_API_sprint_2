@@ -38,21 +38,21 @@ def es_data(es):
     """Фикстура для добавления и удаления данных из ES."""
     def inner(index: str, data: list[BaseModel]):
         """Получить конструктор для добавления и удаления данных из ES.
-        
+
         Args:
             index: название индекса
-            data: список объектов        
+            data: список объектов
 
         """
         @dataclass
         class DataHandler:
             """Класс для добавления и удаления данных из ES.
-            
+
             Args:
                 index: название индекса
                 data: список объектов
                 es_client: клиент ElasticSearch
-            
+
             """
             index: str
             data: list[BaseModel]
@@ -153,8 +153,9 @@ async def persons_search(es_data):
     """Создание персон в базе для поиска и последующее удаление."""
 
     names = ['john malkovich', 'john travolta', 'leonardo dicaprio']
-    persons = [generate_random_person(id=id, name=name) for id, name in enumerate(names, start=1)]
-    
+    persons = [generate_random_person(id=id, name=name)
+               for id, name in enumerate(names, start=1)]
+
     es = es_data('persons', persons)
     await es.insert()
     yield persons
@@ -166,8 +167,9 @@ async def genres_search(es_data):
     """Создание жанров в базе для поиска и последующее удаление."""
 
     names = ['action', 'reality show', 'talk show']
-    genres = [generate_random_genre(id=id, name=name) for id, name in enumerate(names, start=1)]
-    
+    genres = [generate_random_genre(id=id, name=name)
+              for id, name in enumerate(names, start=1)]
+
     es = es_data('genres', genres)
     await es.insert()
     yield genres
@@ -179,8 +181,9 @@ async def films_search(es_data):
     """Создание фильмов в базе для поиска и последующее удаление."""
 
     titles = ['star wars', 'world war z', 'interstellar']
-    films = [generate_random_film(id=id, title=title) for id, title in enumerate(titles, start=1)]
-    
+    films = [generate_random_film(id=id, title=title)
+             for id, title in enumerate(titles, start=1)]
+
     es = es_data('movies', films)
     await es.insert()
     yield films
