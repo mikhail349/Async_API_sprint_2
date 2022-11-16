@@ -3,7 +3,9 @@ from typing import Optional, Any
 
 from pydantic import BaseModel
 
+from db.redis import get_redis
 from src.api.v1.query_params.base import Page
+from storages.redis import RedisStorage
 
 
 class DataStorage(ABC):
@@ -42,3 +44,40 @@ class DataStorage(ABC):
 
         """
         pass
+
+
+class CacheStorage(ABC):
+    """Абстрактный класс хранилища кеша."""
+
+    @abstractmethod
+    async def get(self, key: str) -> Optional[Any]:
+        """Получить данные по ключу из кэша.
+
+        Args:
+            key: ключ
+
+        Returns:
+            Optional[Any]: данные
+        """
+        pass
+
+    @abstractmethod
+    async def put(self, key: str, value: Any):
+        """Записать данные в кэш.
+
+        Args:
+            key: ключ
+            value: данные
+        """
+        pass
+
+
+async def get_cache_storage() -> CacheStorage:
+    """Получить инстанс класса хранилища кеша.
+
+    Returns:
+        CacheStorage: Класс хранилища кеша
+
+    """
+    redis = await get_redis()
+    return RedisStorage(redis=redis)
