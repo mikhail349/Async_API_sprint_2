@@ -1,9 +1,8 @@
 import pytest
 
-from tests.functional.testdata import default_values, messages
-
 from tests.functional.src.lib.api_client import APIClient
 from tests.functional.src.lib.models.film import Film
+from tests.functional.testdata import default_values, messages
 
 
 class TestFilm:
@@ -13,7 +12,6 @@ class TestFilm:
     index = "movies"
     list_view_fields = ['id', 'title', 'description', 'imdb_rating',
                         'creation_date']
-
 
     @pytest.mark.asyncio
     async def test_get_obj_by_id(self, film, api_client):
@@ -82,3 +80,29 @@ class TestFilm:
         data, status = await api_client.get(f"{self.endpoint}/{film.id}")
         assert status == 200
         assert Film(**data) == film
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize('field', ["genre", "actor", "writer", "director",
+                                       "imdb_rating"])
+    async def test_filter(self, films, api_client, field):
+        """Проверка фильтрации."""
+        value = (
+            films[0].imdb_rating
+            if field == "imdb_rating"
+            else getattr(films[0], f"{field}s")[0].id
+        )
+        data, status = await api_client.get(
+            self.endpoint, **{f"filter[{field}]": value})
+        assert status == 200
+        assert data[0]["id"] == films[0].id
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("reverse", [True, False])
+    async def test_sort(self, persons, reverse, api_client):
+        """Проверка сортировки."""
+        perfix = "-" if reverse else ""
+        data, status = await api_client.get(
+            self.endpoint, **{"sort": f"{perfix}id"})
+        assert status == 200
+        assert [obj["id"] for obj in data] == sorted(
+            [obj["id"] for obj in data], reverse=reverse)
