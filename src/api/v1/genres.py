@@ -17,9 +17,11 @@ router = APIRouter()
 async def search(
         query: str = Query(..., description='Поисковый запрос'),
         page: Page = Depends(get_page),
+        sort: list[str] = Query(default=[],
+                                description='Поле для сортировки'),
         genre_service: GenreService = Depends(get_genre_service)
 ) -> list[Genre]:
-    return await genre_service.search(query=query, page=page)
+    return await genre_service.search(query=query, page=page, sort=sort)
 
 
 @router.get("/",
