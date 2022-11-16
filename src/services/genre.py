@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from fastapi import Depends
 from pydantic import BaseModel
 
-from storages.base import get_cache_storage
+from src.storages.cache import get_cache_storage
 from src.models import genre
 from src.services.base import BaseService
 from src.storages.base import DataStorage, CacheStorage
