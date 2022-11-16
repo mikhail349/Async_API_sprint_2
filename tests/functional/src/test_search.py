@@ -66,7 +66,7 @@ class TestPersonSearch(TestBaseSearch):
                 {'status': 200, 'length': 2, 'ids': ('1', '2')}
             ),
             (
-                {'params': {'query': 'john', 'page[size]': 1}},
+                {'params': {'query': 'john', 'page[size]': 1}, 'sort': 'id'},
                 {'status': 200, 'length': 1, 'ids': ('1',)}
             ),
             (
@@ -107,7 +107,7 @@ class TestGenreSearch(TestBaseSearch):
                 {'status': 200, 'length': 2, 'ids': ('2', '3')}
             ),
             (
-                {'params': {'query': 'show', 'page[size]': 1}},
+                {'params': {'query': 'show', 'page[size]': 1}, 'sort': 'id'},
                 {'status': 200, 'length': 1, 'ids': ('2',)}
             ),
             (
@@ -148,7 +148,7 @@ class TestFilmSearch(TestBaseSearch):
                 {'status': 200, 'length': 2, 'ids': ('1', '2')}
             ),
             (
-                {'params': {'query': 'war', 'page[size]': 1}},
+                {'params': {'query': 'war', 'page[size]': 1}, 'sort': 'id'},
                 {'status': 200, 'length': 1, 'ids': ('1',)}
             ),
             (
