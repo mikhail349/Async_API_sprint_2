@@ -4,10 +4,10 @@ from dataclasses import dataclass
 from fastapi import Depends
 from pydantic import BaseModel
 
-from src.storages.redis import get_redis_storage, RedisStorage
+from src.storages.redis import get_redis_storage
 from src.models import person
 from src.services.base import BaseService
-from src.storages.base import DataStorage
+from src.storages.base import DataStorage, CacheStorage
 from src.storages.persons import get_data_storage
 
 
@@ -20,8 +20,8 @@ class PersonService(BaseService):
 
 @lru_cache()
 def get_person_service(
-        redis_storage: RedisStorage = Depends(get_redis_storage),
+        cache_storage: CacheStorage = Depends(get_redis_storage),
         data_storage: DataStorage = Depends(get_data_storage),
 ) -> PersonService:
-    return PersonService(redis_storage=redis_storage,
+    return PersonService(cache_storage=cache_storage,
                          data_storage=data_storage)
