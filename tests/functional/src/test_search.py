@@ -1,3 +1,5 @@
+import http
+
 import pytest
 from pydantic import BaseModel
 
@@ -63,23 +65,24 @@ class TestPersonSearch(TestBaseSearch):
         [
             (
                 {'params': {'query': 'john'}},
-                {'status': 200, 'length': 2, 'ids': ('1', '2')}
+                {'status': http.HTTPStatus.OK, 'length': 2, 'ids': ('1', '2')}
             ),
             (
                 {'params': {'query': 'john', 'page[size]': 1}, 'sort': 'id'},
-                {'status': 200, 'length': 1, 'ids': ('1',)}
+                {'status': http.HTTPStatus.OK, 'length': 1, 'ids': ('1',)}
             ),
             (
                 {'params': {'query': ''}},
-                {'status': 200, 'length': 0}
+                {'status': http.HTTPStatus.OK, 'length': 0}
             ),
             (
                 {'params': {}},
-                {'status': 422, 'msg': messages.FIELD_REQUIRED}
+                {'status': http.HTTPStatus.UNPROCESSABLE_ENTITY,
+                 'msg': messages.FIELD_REQUIRED}
             ),
             (
                 {'params': {'query': 'john'}, 'test_cache': True},
-                {'status': 200, 'length': 2, 'ids': ('1', '2')}
+                {'status': http.HTTPStatus.OK, 'length': 2, 'ids': ('1', '2')}
             ),
         ],
     )
@@ -104,23 +107,24 @@ class TestGenreSearch(TestBaseSearch):
         [
             (
                 {'params': {'query': 'show'}},
-                {'status': 200, 'length': 2, 'ids': ('2', '3')}
+                {'status': http.HTTPStatus.OK, 'length': 2, 'ids': ('2', '3')}
             ),
             (
                 {'params': {'query': 'show', 'page[size]': 1}, 'sort': 'id'},
-                {'status': 200, 'length': 1, 'ids': ('2',)}
+                {'status': http.HTTPStatus.OK, 'length': 1, 'ids': ('2',)}
             ),
             (
                 {'params': {'query': ''}},
-                {'status': 200, 'length': 0}
+                {'status': http.HTTPStatus.OK, 'length': 0}
             ),
             (
                 {'params': {}},
-                {'status': 422, 'msg': messages.FIELD_REQUIRED}
+                {'status': http.HTTPStatus.UNPROCESSABLE_ENTITY,
+                 'msg': messages.FIELD_REQUIRED}
             ),
             (
                 {'params': {'query': 'show'}, 'test_cache': True},
-                {'status': 200, 'length': 2, 'ids': ('2', '3')}
+                {'status': http.HTTPStatus.OK, 'length': 2, 'ids': ('2', '3')}
             ),
         ],
     )
@@ -145,23 +149,24 @@ class TestFilmSearch(TestBaseSearch):
         [
             (
                 {'params': {'query': 'war'}},
-                {'status': 200, 'length': 2, 'ids': ('1', '2')}
+                {'status': http.HTTPStatus.OK, 'length': 2, 'ids': ('1', '2')}
             ),
             (
                 {'params': {'query': 'war', 'page[size]': 1}, 'sort': 'id'},
-                {'status': 200, 'length': 1, 'ids': ('1',)}
+                {'status': http.HTTPStatus.OK, 'length': 1, 'ids': ('1',)}
             ),
             (
                 {'params': {'query': ''}},
-                {'status': 200, 'length': 0}
+                {'status': http.HTTPStatus.OK, 'length': 0}
             ),
             (
                 {'params': {}},
-                {'status': 422, 'msg': messages.FIELD_REQUIRED}
+                {'status': http.HTTPStatus.UNPROCESSABLE_ENTITY,
+                 'msg': messages.FIELD_REQUIRED}
             ),
             (
                 {'params': {'query': 'war'}, 'test_cache': True},
-                {'status': 200, 'length': 2, 'ids': ('1', '2')}
+                {'status': http.HTTPStatus.OK, 'length': 2, 'ids': ('1', '2')}
             ),
         ],
     )
