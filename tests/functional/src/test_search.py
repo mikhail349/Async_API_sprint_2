@@ -1,7 +1,7 @@
 import pytest
 from pydantic import BaseModel
 
-from tests.functional.testdata import messages
+from tests.functional.src.lib.constants import messages
 
 
 class TestBaseSearch:
