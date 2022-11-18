@@ -1,6 +1,6 @@
 import pytest
 
-from tests.functional.testdata import default_values, messages
+from tests.functional.src.lib.constants import default_values, messages
 
 
 class TestGenre:

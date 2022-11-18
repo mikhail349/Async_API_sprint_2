@@ -2,7 +2,7 @@ import pytest
 
 from tests.functional.src.lib.api_client import APIClient
 from tests.functional.src.lib.models.film import Film
-from tests.functional.testdata import default_values, messages
+from tests.functional.src.lib.constants import default_values, messages
 
 
 class TestFilm:
