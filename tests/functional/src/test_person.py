@@ -1,3 +1,5 @@
+import http
+
 import pytest
 
 from tests.functional.src.lib.constants import default_values, messages
@@ -14,7 +16,7 @@ class TestGenre:
     async def test_get_obj_by_id(self, person, api_client):
         """Проверить, что объект возвращается по запросу с корректным id."""
         data, status = await api_client.get(f"{self.endpoint}/{person.id}")
-        assert status == 200
+        assert status == http.HTTPStatus.OK
         assert data == person.dict()
 
     @pytest.mark.asyncio
@@ -22,14 +24,14 @@ class TestGenre:
     async def test_wrong_id(self, person, id_value, api_client):
         """Проверить ответ на запрос с несуществующим id."""
         data, status = await api_client.get(f"{self.endpoint}/{id_value}")
-        assert status == 404
+        assert status == http.HTTPStatus.NOT_FOUND
         assert data == {"detail": "Персона не найдена"}
 
     @pytest.mark.asyncio
     async def test_list_view(self, persons, api_client):
         """Проверить получение объектов списком."""
         data, status = await api_client.get(self.endpoint)
-        assert status == 200
+        assert status == http.HTTPStatus.OK
         assert len(data) == default_values.PAGE_SIZE
 
     @pytest.mark.asyncio
@@ -45,7 +47,7 @@ class TestGenre:
         """Проверить постраничный вывод объектов."""
         page_size = query_params.get("page[size]", default_values.PAGE_SIZE)
         data, status = await api_client.get(self.endpoint, **query_params)
-        assert status == 200
+        assert status == http.HTTPStatus.OK
         assert len(data) == page_size
         assert all(
             key in data[0].keys()
@@ -68,7 +70,7 @@ class TestGenre:
                                          api_client):
         """Проверить ответы сервиса на запросы с некорректными параметрами."""
         data, status = await api_client.get(self.endpoint, **query_params)
-        assert status == 422
+        assert status == http.HTTPStatus.UNPROCESSABLE_ENTITY
         assert data["detail"][0]["msg"] == error_msg
 
     @pytest.mark.asyncio
@@ -78,7 +80,7 @@ class TestGenre:
         await api_client.get(f"{self.endpoint}/{person.id}")
         await es.delete(self.index, person.id)
         data, status = await api_client.get(f"{self.endpoint}/{person.id}")
-        assert status == 200
+        assert status == http.HTTPStatus.OK
         assert data == person.dict()
 
     @pytest.mark.asyncio
@@ -87,7 +89,7 @@ class TestGenre:
         data, status = await api_client.get(
             self.endpoint, **{"filter[role]": "actor"}
         )
-        assert status == 200
+        assert status == http.HTTPStatus.OK
         assert all("actor" in obj["roles"] for obj in data)
 
     @pytest.mark.asyncio
@@ -97,6 +99,6 @@ class TestGenre:
         perfix = "-" if reverse else ""
         data, status = await api_client.get(
             self.endpoint, **{"sort": f"{perfix}id"})
-        assert status == 200
+        assert status == http.HTTPStatus.OK
         assert [obj["id"] for obj in data] == sorted(
             [obj["id"] for obj in data], reverse=reverse)
