@@ -5,6 +5,8 @@ services:
     env_file:
       - .env
     restart: always
+    volumes:
+      - ${HOST_JWT_PUBLIC_KEY_PATH}:${JWT_PUBLIC_KEY_PATH}:ro
     depends_on:
       - elastic
       - redis
