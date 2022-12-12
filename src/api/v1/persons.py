@@ -6,7 +6,7 @@ from src.api.v1.query_params.base import Page, get_page
 from src.api.v1.query_params.persons import Filter, get_filter
 from src.api.v1.models.person import Person
 from src.services.person import PersonService, get_person_service
-from src.core.messages import messages
+from src.core.messages import PERSON_NOT_FOUND
 
 router = APIRouter()
 
@@ -36,7 +36,7 @@ async def person_details(
     person = await person_service.get_by_id(person_id)
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
-                            detail=messages.PERSON_NOT_FOUND)
+                            detail=PERSON_NOT_FOUND)
     return person
 
 

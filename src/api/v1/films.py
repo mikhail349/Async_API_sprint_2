@@ -6,7 +6,7 @@ from src.api.v1.query_params.base import Page, get_page
 from src.api.v1.query_params.films import Filter, get_filter
 from src.api.v1.models.film import FilmList, FilmDetails
 from src.services.film import FilmService, get_film_service
-from src.core.messages import messages
+from src.core.messages import FILM_NOT_FOUND
 
 router = APIRouter()
 
@@ -37,7 +37,7 @@ async def film_details(
     film = await film_service.get_by_id(film_id)
     if not film:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
-                            detail=messages.FILM_NOT_FOUND)
+                            detail=FILM_NOT_FOUND)
     return FilmDetails(**film.dict())
 
 

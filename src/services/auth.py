@@ -7,6 +7,7 @@ import jwt
 from jwt.exceptions import InvalidTokenError
 
 from src.core.config import jwt_settings
+from src.core.messages import NO_ACCESS
 
 auth_scheme = HTTPBearer()
 jwt_public_key = open(jwt_settings.jwt_public_key_path).read()
@@ -14,7 +15,7 @@ jwt_public_key = open(jwt_settings.jwt_public_key_path).read()
 
 def raise_no_access():
     """Функция вызова Exception No access."""
-    raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="No access")
+    raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail=NO_ACCESS)
 
 
 def decode_jwt(token: str) -> dict:
