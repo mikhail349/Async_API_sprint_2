@@ -8,6 +8,7 @@ from jwt.exceptions import InvalidTokenError
 
 from src.core.config import jwt_settings
 from src.core.messages import NO_ACCESS
+from src.models.user import User
 
 auth_scheme = HTTPBearer()
 jwt_public_key = open(jwt_settings.jwt_public_key_path).read()
@@ -39,16 +40,21 @@ def decode_jwt(token: str) -> dict:
         raise_no_access()
 
 
-def login_required(token: str = Depends(auth_scheme)) -> str:
+def login_required(token: str = Depends(auth_scheme)) -> User:
     """Dependency-функция авторизации пользователя.
     В случае ошибки вызывает HTTPException с кодом 403.
 
     Returns:
-        str: username
+        User: пользователь
 
     """
     decoded = decode_jwt(token)
-    return decoded.get('sub')
+    user = User(
+        username=decoded["sub"],
+        is_superuser=decoded["is_superuser"],
+        permissions=decoded.get("permissions")
+    )
+    return user
 
 
 def permission_required(permission_name: str):
@@ -66,11 +72,10 @@ def permission_required(permission_name: str):
             str: username
 
         """
-        decoded = decode_jwt(token)
-        username = decoded.get('sub')
-        if decoded.get('is_superuser'):
-            return username
-        if permission_name not in decoded.get('permissions'):
-            raise_no_access()
-        return username
+        user = login_required(token=token)
+
+        if not user.is_superuser:
+            if permission_name not in user.permissions:
+                raise_no_access()
+        return user
     return inner
