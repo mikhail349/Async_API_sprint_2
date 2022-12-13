@@ -54,6 +54,14 @@ class ElasticSettings(BaseConfig):
     """Максимальное кол-во секунд для backoff"""
 
 
+class JwtSettings(BaseConfig):
+    jwt_algorithm: str = "RS256"
+    """Алгоритм шифрования."""
+    jwt_public_key_path: str
+    """Путь до публичного RSA ключа."""
+
+
 project_settings = ProjectSettings()
 redis_settings = RedisSettings()
 elastic_settings = ElasticSettings()
+jwt_settings = JwtSettings()

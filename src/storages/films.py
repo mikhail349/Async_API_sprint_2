@@ -1,10 +1,26 @@
-from typing import Any
+from typing import Any 
+import datetime
 
 from elasticsearch import AsyncElasticsearch
 
 from src.api.v1.query_params.films import Filter
 from src.db.elastic import get_elastic
 from src.storages.elastic import ElasticStorage
+
+
+class FilmStorageFilter(Filter):
+    """Модель фильтрации кинопроизведения.
+
+    Args:
+        genre: ID жанра
+        actor: ID актера
+        writer: ID сценариста
+        director: ID режиссера
+        imdb_rating: Рейтинг IMDb
+        newest: новинки
+
+    """
+    newest: bool = False
 
 
 class FilmElasticStorage(ElasticStorage):
@@ -17,7 +33,7 @@ class FilmElasticStorage(ElasticStorage):
     def __init__(self, es: AsyncElasticsearch) -> None:
         super().__init__(es=es, index='movies')
 
-    def compose_filters(self, filter: Filter) -> list[dict]:
+    def compose_filters(self, filter: FilmStorageFilter) -> list[dict]:
         def _get_nested(field_name: str, value: Any) -> dict:
             return {
                 'nested': {
@@ -50,6 +66,16 @@ class FilmElasticStorage(ElasticStorage):
 
         if filter.imdb_rating:
             filters.append(_get('imdb_rating', filter.imdb_rating))
+        
+        if filter.newest:
+            creation_date_gte = datetime.date.today() - datetime.timedelta(weeks=1)
+            filters.append({
+                "range": {
+                    "creation_date": {
+                        "gte": creation_date_gte.strftime('%Y-%m-%d')
+                    }
+                }
+            })
 
         return filters
 

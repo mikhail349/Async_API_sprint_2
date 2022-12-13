@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Query, Path, HTTPException
 from src.api.v1.query_params.base import Page, get_page
 from src.api.v1.models.genre import Genre
 from src.services.genre import GenreService, get_genre_service
-from src.core.messages import messages
+from src.core.messages import GENRE_NOT_FOUND
 
 router = APIRouter()
 
@@ -46,5 +46,5 @@ async def genre_details(
     genre = await genre_service.get_by_id(genre_id)
     if not genre:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
-                            detail=messages.GENRE_NOT_FOUND)
+                            detail=GENRE_NOT_FOUND)
     return genre
