@@ -41,7 +41,7 @@ async def films(
     page: Page = Depends(get_page),
     sort: list[str] = Query(default=[], description='Поле для сортировки'),
     film_service: FilmService = Depends(get_film_service),
-    #user: User = Depends(permission_required('view_newest_movies'))
+    user: User = Depends(permission_required('view_newest_movies'))
 ) -> list[FilmList]:
     storage_filter = FilmStorageFilter(**filter.dict(), newest=True)
     films = await film_service.get(filter=storage_filter, page=page, sort=sort)
