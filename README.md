@@ -4,6 +4,15 @@
 
 В качестве ETL проекта используется [данный репозиторий](https://github.com/mikhail349/new_admin_panel_sprint_3)
 
+## Документация API (Swagger)
+
+Доступна по api `/api/openapi`
+
+## Интеграция с [сервисом авторизации](https://github.com/mikhail349/Auth_sprint_2)
+
+Для обращения к следующим API требуется авторизация:
+1. `/api/v1/films/newest`
+
 ## Первый запуск
 
 1. Сформировать виртуальное Python-окружение `python -m venv venv`
