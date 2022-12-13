@@ -23,8 +23,6 @@ services:
   redis:
     image: redis:alpine
     restart: always
-    ports:
-      - 6380:6379
 
   nginx:
     image: nginx:1.19.2-alpine
