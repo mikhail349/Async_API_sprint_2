@@ -64,16 +64,14 @@ def permission_required(permission_name: str):
         permission_name: название права
 
     """
-    def inner(token: HTTPBearer = Depends(auth_scheme)) -> str:
+    def inner(user: User = Depends(login_required)) -> User:
         """Основная функция проверки прав.
         В случае ошибки вызывает HTTPException с кодом 403.
 
         Returns:
-            str: username
+            User: пользователь
 
         """
-        user = login_required(token=token)
-
         if not user.is_superuser:
             if permission_name not in user.permissions:
                 raise_no_access()
