@@ -1,8 +1,8 @@
 # API-сервис для онлайн-кинотеатра
 
-Основной репозиторий находится [тут](https://github.com/mikhail349ya/Async_API_sprint_2)
+Основной репозиторий находится [тут](https://github.com/mikhail349/Async_API_sprint_2)
 
-В качестве ETL проекта используется [данный репозиторий](https://github.com/mikhail349ya/new_admin_panel_sprint_3)
+В качестве ETL проекта используется [данный репозиторий](https://github.com/mikhail349/new_admin_panel_sprint_3)
 
 ## Первый запуск
 
