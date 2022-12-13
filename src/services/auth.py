@@ -19,7 +19,7 @@ def raise_no_access():
     raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail=NO_ACCESS)
 
 
-def decode_jwt(token: str) -> dict:
+def decode_jwt(token: HTTPBearer) -> dict:
     """Расшифровать JWT.
     В случае ошибки вызывает HTTPException с кодом 403.
 
@@ -40,7 +40,7 @@ def decode_jwt(token: str) -> dict:
         raise_no_access()
 
 
-def login_required(token: str = Depends(auth_scheme)) -> User:
+def login_required(token: HTTPBearer = Depends(auth_scheme)) -> User:
     """Dependency-функция авторизации пользователя.
     В случае ошибки вызывает HTTPException с кодом 403.
 
@@ -64,7 +64,7 @@ def permission_required(permission_name: str):
         permission_name: название права
 
     """
-    def inner(token: str = Depends(auth_scheme)) -> str:
+    def inner(token: HTTPBearer = Depends(auth_scheme)) -> str:
         """Основная функция проверки прав.
         В случае ошибки вызывает HTTPException с кодом 403.
 
